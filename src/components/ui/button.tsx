@@ -1,13 +1,9 @@
 import clsx from "clsx";
-import { ButtonHTMLAttributes, DetailedHTMLProps, FC } from "react";
+import type { ButtonHTMLAttributes, DetailedHTMLProps, FC } from "react";
 
-interface Props
-  extends DetailedHTMLProps<
-    ButtonHTMLAttributes<HTMLButtonElement>,
-    HTMLButtonElement
-  > {}
-
-export const Button: FC<Props> = ({ children, className, ...props }) => {
+export const Button: FC<
+  DetailedHTMLProps<ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement>
+> = ({ children, className, ...props }) => {
   return (
     <button
       className={clsx(

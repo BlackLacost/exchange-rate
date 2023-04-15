@@ -3,6 +3,7 @@ import type { GetStaticProps, InferGetStaticPropsType, NextPage } from "next";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Button } from "~/components/ui/button";
+import { Input } from "~/components/ui/input";
 
 const Home: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
   currencies,
@@ -19,7 +20,7 @@ const Home: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
 export default Home;
 
 const schema = z.object({
-  amount: z.number().positive(),
+  amount: z.number().positive("Please enter an amount greater than 0"),
   from: z.string().min(3).max(5),
   to: z.string().min(3).max(5),
 });
@@ -40,16 +41,21 @@ const CurrencyConverter = ({ currencies }: CurrencyConverterProps) => {
     defaultValues: { amount: 1, from: "rub", to: "usd" },
   });
 
-  const onSubmit = handleSubmit((data) => {
+  const onSubmit = handleSubmit((data, e) => {
+    e?.preventDefault();
     console.log(data);
   });
   return (
-    <form onSubmit={() => void onSubmit()}>
-      {errors.amount && <p>{errors.amount.message}</p>}
-      <input
+    <form
+      className="flex flex-col gap-y-3 p-4"
+      onSubmit={(e) => void onSubmit(e)}
+    >
+      <Input
         {...register("amount", { valueAsNumber: true })}
+        id="amount"
+        label="Amount"
         type="number"
-        placeholder="Amount"
+        error={errors.amount}
       />
       {errors.from && <p>{errors.from.message}</p>}
       <select {...register("from")}>
@@ -69,7 +75,7 @@ const CurrencyConverter = ({ currencies }: CurrencyConverterProps) => {
           >{`${acronym.toUpperCase()} ${name}`}</option>
         ))}
       </select>
-      <Button>Convert</Button>
+      <Button type="submit">Convert</Button>
     </form>
   );
 };
