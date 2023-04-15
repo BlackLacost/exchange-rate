@@ -1,4 +1,4 @@
-import { type Currency } from "~/pages";
+import { type Currency } from "~/components/currency-converter";
 
 export const toCurrency = (value: number, code: string) => {
   const result = new Intl.NumberFormat("en-En", {

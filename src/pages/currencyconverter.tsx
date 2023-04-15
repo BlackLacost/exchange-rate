@@ -8,24 +8,24 @@ import {
   type Currency,
 } from "~/components/currency-converter";
 
-const Home: NextPage<
+const CurrencyConverterPage: NextPage<
   InferGetServerSidePropsType<typeof getServerSideProps>
-> = ({ currencies, from, to, amount }) => {
+> = ({ currencies, amount, from, to }) => {
   return (
     <>
       <main>
         <CurrencyConverter
           currencies={currencies}
+          amount={amount}
           from={from}
           to={to}
-          amount={amount}
         />
       </main>
     </>
   );
 };
 
-export default Home;
+export default CurrencyConverterPage;
 
 interface FetchAllCurrenciesResponse {
   [key: string]: string;
