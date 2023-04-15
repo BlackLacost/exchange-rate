@@ -31,7 +31,10 @@ export const Select = forwardRef<HTMLSelectElement, Props>(function Select(
       </label>
       <select
         ref={ref}
-        className={clsx("rounded-md border bg-white px-4 py-2", className)}
+        className={clsx(
+          "rounded-md border bg-white px-3 py-2 shadow-sm focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-blue-500",
+          className
+        )}
         {...props}
       >
         {options.map(({ value, name }) => (

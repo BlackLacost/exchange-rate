@@ -116,7 +116,11 @@ export const CurrencyConverter = ({
           name,
         }))}
       />
-      <button type="button" onClick={() => void switchCurrency()}>
+      <button
+        className="self-start rounded-full shadow-sm focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        type="button"
+        onClick={() => void switchCurrency()}
+      >
         <SwitchIcon />
       </button>
       <Select

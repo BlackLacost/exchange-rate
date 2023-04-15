@@ -5,7 +5,7 @@ export const SwitchIcon = () => {
       fill="none"
       viewBox="0 0 17 17"
       aria-hidden="true"
-      className="h-10 w-10 rotate-90 rounded-full border p-3 text-primary-500"
+      className="h-10 w-10 rotate-90 rounded-full border p-3 text-primary-500  shadow-sm focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
     >
       <path
         fill="currentColor"

@@ -7,7 +7,7 @@ export const Button: FC<
   return (
     <button
       className={clsx(
-        "rounded-md bg-primary-500 px-4 py-2 font-bold text-white",
+        "rounded-md bg-primary-500 px-4 py-2 font-bold text-white shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2",
         className
       )}
       {...props}
