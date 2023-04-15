@@ -7,7 +7,7 @@ import { SwitchIcon } from "~/components/switchIcon";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { Select } from "~/components/ui/select";
-import { toCurrency } from "~/utils/currency";
+import { toCurrencyWithName } from "~/utils/currency";
 
 const Home: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
   currencies,
@@ -36,7 +36,7 @@ interface CurrencyConverterProps {
 }
 
 const CurrencyConverter = ({ currencies }: CurrencyConverterProps) => {
-  const [result, setResult] = useState<string>("");
+  const [exchangeRate, setExchangeRate] = useState<number>();
 
   const {
     register,
@@ -49,14 +49,12 @@ const CurrencyConverter = ({ currencies }: CurrencyConverterProps) => {
     defaultValues: { amount: 1, from: "usd", to: "rub" },
   });
 
-  const onSubmit = handleSubmit(async ({ from, to, amount }, e) => {
+  const onSubmit = handleSubmit(async ({ from, to }, e) => {
     e?.preventDefault();
     const data = await fetchExchangeRateFromTo(from, to);
     const exchangeRate = data[to];
     if (exchangeRate && typeof exchangeRate === "number") {
-      setResult(
-        `${toCurrency(amount, from)} = ${toCurrency(exchangeRate * amount, to)}`
-      );
+      setExchangeRate(exchangeRate);
     }
   });
 
@@ -103,14 +101,29 @@ const CurrencyConverter = ({ currencies }: CurrencyConverterProps) => {
         }))}
       />
       <Button type="submit">Convert</Button>
-      <p className="mt-2 text-center text-xl font-bold text-slate-800">
-        {result}
-      </p>
+      {exchangeRate && (
+        <div>
+          <p className="mt-2 text-sm font-bold text-slate-500">
+            {`${toCurrencyWithName(
+              getValues("amount"),
+              getValues("from"),
+              currencies
+            )} = `}
+          </p>
+          <p className="text-xl font-bold text-slate-800">
+            {toCurrencyWithName(
+              exchangeRate * getValues("amount"),
+              getValues("to"),
+              currencies
+            )}
+          </p>
+        </div>
+      )}
     </form>
   );
 };
 
-interface Currency {
+export interface Currency {
   acronym: string;
   name: string;
 }
