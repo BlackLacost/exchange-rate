@@ -4,6 +4,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
+import { Select } from "~/components/ui/select";
 
 const Home: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
   currencies,
@@ -57,24 +58,26 @@ const CurrencyConverter = ({ currencies }: CurrencyConverterProps) => {
         type="number"
         error={errors.amount}
       />
-      {errors.from && <p>{errors.from.message}</p>}
-      <select {...register("from")}>
-        {currencies.map(({ acronym, name }) => (
-          <option
-            key={acronym}
-            value={acronym}
-          >{`${acronym.toUpperCase()} ${name}`}</option>
-        ))}
-      </select>
-      {errors.to && <p>{errors.to.message}</p>}
-      <select {...register("to")}>
-        {currencies.map(({ acronym, name }) => (
-          <option
-            key={acronym}
-            value={acronym}
-          >{`${acronym.toUpperCase()} ${name}`}</option>
-        ))}
-      </select>
+      <Select
+        {...register("from")}
+        id="from"
+        label="From"
+        error={errors.from}
+        options={currencies.map(({ acronym, name }) => ({
+          value: acronym,
+          name,
+        }))}
+      />
+      <Select
+        {...register("to")}
+        id="to"
+        label="To"
+        error={errors.from}
+        options={currencies.map(({ acronym, name }) => ({
+          value: acronym,
+          name,
+        }))}
+      />
       <Button type="submit">Convert</Button>
     </form>
   );
