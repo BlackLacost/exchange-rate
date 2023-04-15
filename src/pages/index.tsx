@@ -2,6 +2,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import type { GetStaticProps, InferGetStaticPropsType, NextPage } from "next";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { Button } from "~/components/ui/button";
 
 const Home: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
   currencies,
@@ -68,7 +69,7 @@ const CurrencyConverter = ({ currencies }: CurrencyConverterProps) => {
           >{`${acronym.toUpperCase()} ${name}`}</option>
         ))}
       </select>
-      <button>Convert</button>
+      <Button>Convert</Button>
     </form>
   );
 };
