@@ -1,6 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { SwitchIcon } from "~/components/switchIcon";
@@ -18,9 +18,9 @@ const schema = z.object({
 type FormData = z.infer<typeof schema>;
 
 interface CurrencyConverterProps {
-  amount: number;
-  from: string;
-  to: string;
+  amount: number | null;
+  from: string | null;
+  to: string | null;
   currencies: Currency[];
 }
 
@@ -41,20 +41,43 @@ export const CurrencyConverter = ({
     formState: { errors },
   } = useForm<FormData>({
     resolver: zodResolver(schema),
-    defaultValues: { amount, from, to },
+    defaultValues: {
+      amount: amount ?? 100,
+      from: from ?? "usd",
+      to: to ?? "rub",
+    },
   });
+
+  const hasFormQuery = !!amount && !!from && !!to;
+
+  useEffect(() => {
+    const fetch = async () => {
+      if (hasFormQuery) {
+        await onSubmit();
+      }
+    };
+    void fetch();
+  }, [hasFormQuery]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      if (!from || !to) return;
+
+      const data = await fetchExchangeRateFromTo(from, to);
+      const exchangeRate = data[to];
+      if (exchangeRate && typeof exchangeRate === "number") {
+        setExchangeRate(exchangeRate);
+      }
+    };
+    void fetchData();
+  }, [from, to]);
 
   const onSubmit = handleSubmit(async ({ from, to, amount }, e) => {
     e?.preventDefault();
-    const data = await fetchExchangeRateFromTo(from, to);
-    const exchangeRate = data[to];
-    if (exchangeRate && typeof exchangeRate === "number") {
-      setExchangeRate(exchangeRate);
-      await router.replace({
-        query: { ...router.query, amount, from, to },
-        pathname: "/currencyconverter",
-      });
-    }
+    await router.push({
+      query: { ...router.query, amount, from, to },
+      pathname: "/currencyconverter",
+    });
   });
 
   const switchCurrency = async () => {
@@ -70,6 +93,11 @@ export const CurrencyConverter = ({
     <form
       className="flex flex-col gap-y-3 p-4"
       onSubmit={(e) => void onSubmit(e)}
+      onChange={(e) => {
+        if (hasFormQuery) {
+          void onSubmit(e);
+        }
+      }}
     >
       <Input
         {...register("amount", { valueAsNumber: true })}
@@ -103,21 +131,21 @@ export const CurrencyConverter = ({
       />
       <ConvertResult
         exchangeRate={exchangeRate}
-        amount={getValues("amount")}
-        from={getValues("from")}
-        to={getValues("to")}
+        amount={amount}
+        from={from}
+        to={to}
         currencies={currencies}
       />
-      <Button type="submit">Convert</Button>
+      {!hasFormQuery && <Button type="submit">Convert</Button>}
     </form>
   );
 };
 
 interface ConvertResultProps {
   exchangeRate?: number;
-  amount: number;
-  from: string;
-  to: string;
+  amount: number | null;
+  from: string | null;
+  to: string | null;
   currencies: Currency[];
 }
 
@@ -133,7 +161,7 @@ const ConvertResult = ({
   to,
   currencies,
 }: ConvertResultProps) => {
-  if (!exchangeRate) return null;
+  if (!exchangeRate || !amount || !from || !to) return null;
 
   return (
     <section>

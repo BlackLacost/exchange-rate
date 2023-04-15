@@ -44,9 +44,9 @@ const fetchAllCurrencies = async () => {
 
 interface Props {
   currencies: Currency[];
-  amount: number;
-  from: string;
-  to: string;
+  amount: number | null;
+  from: string | null;
+  to: string | null;
 }
 
 export const getServerSideProps: GetServerSideProps<Props> = async ({
@@ -58,9 +58,9 @@ export const getServerSideProps: GetServerSideProps<Props> = async ({
   return {
     props: {
       currencies,
-      amount: amount ? Number(amount) : 1,
-      from: from ? String(from) : "usd",
-      to: to ? String(to) : "rub",
+      amount: amount ? Number(amount) : null,
+      from: from ? String(from) : null,
+      to: to ? String(to) : null,
     },
   };
 };
