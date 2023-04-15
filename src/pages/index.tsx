@@ -3,6 +3,7 @@ import type { GetStaticProps, InferGetStaticPropsType, NextPage } from "next";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { SwitchIcon } from "~/components/switchIcon";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { Select } from "~/components/ui/select";
@@ -40,6 +41,8 @@ const CurrencyConverter = ({ currencies }: CurrencyConverterProps) => {
   const {
     register,
     handleSubmit,
+    getValues,
+    setValue,
     formState: { errors },
   } = useForm<FormData>({
     resolver: zodResolver(schema),
@@ -56,6 +59,13 @@ const CurrencyConverter = ({ currencies }: CurrencyConverterProps) => {
       );
     }
   });
+
+  const switchCurrency = () => {
+    const to = getValues("to");
+    const from = getValues("from");
+    setValue("from", to);
+    setValue("to", from);
+  };
 
   return (
     <form
@@ -79,6 +89,9 @@ const CurrencyConverter = ({ currencies }: CurrencyConverterProps) => {
           name,
         }))}
       />
+      <button type="button" onClick={switchCurrency}>
+        <SwitchIcon />
+      </button>
       <Select
         {...register("to")}
         id="to"
