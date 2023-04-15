@@ -100,26 +100,52 @@ const CurrencyConverter = ({ currencies }: CurrencyConverterProps) => {
           name,
         }))}
       />
+      <ConvertResult
+        exchangeRate={exchangeRate}
+        amount={getValues("amount")}
+        from={getValues("from")}
+        to={getValues("to")}
+        currencies={currencies}
+      />
       <Button type="submit">Convert</Button>
-      {exchangeRate && (
-        <div>
-          <p className="mt-2 text-sm font-bold text-slate-500">
-            {`${toCurrencyWithName(
-              getValues("amount"),
-              getValues("from"),
-              currencies
-            )} = `}
-          </p>
-          <p className="text-xl font-bold text-slate-800">
-            {toCurrencyWithName(
-              exchangeRate * getValues("amount"),
-              getValues("to"),
-              currencies
-            )}
-          </p>
-        </div>
-      )}
     </form>
+  );
+};
+
+interface ConvertResultProps {
+  exchangeRate?: number;
+  amount: number;
+  from: string;
+  to: string;
+  currencies: Currency[];
+}
+
+const ConvertResult = ({
+  exchangeRate,
+  amount,
+  from,
+  to,
+  currencies,
+}: ConvertResultProps) => {
+  if (!exchangeRate) return null;
+
+  return (
+    <section>
+      <p className="mt-2 text-sm font-bold text-slate-500">
+        {`${toCurrencyWithName(amount, from, currencies)} = `}
+      </p>
+      <p className="my-1 text-2xl font-bold text-slate-800">
+        {toCurrencyWithName(exchangeRate * amount, to, currencies)}
+      </p>
+      <div className="font-semibold text-slate-500">
+        <p>{`1 ${from.toUpperCase()} = ${exchangeRate.toFixed(
+          6
+        )} ${to.toUpperCase()}`}</p>
+        <p>{`1 ${to.toUpperCase()} = ${(1 / exchangeRate).toPrecision(
+          6
+        )} ${from.toUpperCase()}`}</p>
+      </div>
+    </section>
   );
 };
 
