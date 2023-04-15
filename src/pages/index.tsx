@@ -58,11 +58,13 @@ const CurrencyConverter = ({ currencies }: CurrencyConverterProps) => {
     }
   });
 
-  const switchCurrency = () => {
+  const switchCurrency = async () => {
     const to = getValues("to");
     const from = getValues("from");
     setValue("from", to);
     setValue("to", from);
+    await onSubmit();
+    return;
   };
 
   return (
@@ -87,7 +89,7 @@ const CurrencyConverter = ({ currencies }: CurrencyConverterProps) => {
           name,
         }))}
       />
-      <button type="button" onClick={switchCurrency}>
+      <button type="button" onClick={() => void switchCurrency()}>
         <SwitchIcon />
       </button>
       <Select
