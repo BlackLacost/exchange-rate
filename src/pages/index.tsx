@@ -90,7 +90,9 @@ const CurrencyConverter = ({ currencies }: CurrencyConverterProps) => {
         }))}
       />
       <Button type="submit">Convert</Button>
-      <p className="text-center text-xl font-bold text-slate-800">{result}</p>
+      <p className="mt-2 text-center text-xl font-bold text-slate-800">
+        {result}
+      </p>
     </form>
   );
 };
