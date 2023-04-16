@@ -14,6 +14,6 @@ export const toCurrencyWithName = (
   currencies: Currency[]
 ) => {
   return `${toCurrency(value, code)} ${
-    currencies.find((c) => c.acronym === code)?.name ?? code
+    currencies.find((c) => c.value === code)?.name ?? code
   }`;
 };

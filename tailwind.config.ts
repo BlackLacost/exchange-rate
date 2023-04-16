@@ -8,6 +8,7 @@ export default {
       colors: {
         primary: colors.indigo,
         error: colors.red,
+        secondary: colors.slate,
       },
     },
   },

@@ -7,6 +7,7 @@ import {
   CurrencyConverter,
   type Currency,
 } from "~/components/currency-converter";
+import { fetchAllCurrencies } from "~/utils/api";
 
 const CurrencyConverterPage: NextPage<
   InferGetServerSidePropsType<typeof getServerSideProps>
@@ -26,21 +27,6 @@ const CurrencyConverterPage: NextPage<
 };
 
 export default CurrencyConverterPage;
-
-interface FetchAllCurrenciesResponse {
-  [key: string]: string;
-}
-
-const fetchAllCurrencies = async () => {
-  const res = await fetch(
-    "https://cdn.jsdelivr.net/gh/fawazahmed0/currency-api@1/latest/currencies.json"
-  );
-  const data = (await res.json()) as FetchAllCurrenciesResponse;
-  return Object.entries(data).map(([k, v]) => ({
-    acronym: k,
-    name: v,
-  }));
-};
 
 interface Props {
   currencies: Currency[];

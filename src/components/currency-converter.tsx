@@ -1,12 +1,13 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
+import { useCallback, useEffect, useState } from "react";
+import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
 import { SwitchIcon } from "~/components/switchIcon";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { Select } from "~/components/ui/select";
+import { fetchExchangeRateFromTo } from "~/utils/api";
 import { toCurrencyWithName } from "~/utils/currency";
 
 const schema = z.object({
@@ -38,6 +39,9 @@ export const CurrencyConverter = ({
     handleSubmit,
     getValues,
     setValue,
+    resetField,
+    control,
+    watch,
     formState: { errors },
   } = useForm<FormData>({
     resolver: zodResolver(schema),
@@ -50,6 +54,17 @@ export const CurrencyConverter = ({
 
   const hasFormQuery = !!amount && !!from && !!to;
 
+  const onSubmit = useCallback(
+    handleSubmit(async ({ from, to, amount }, e) => {
+      e?.preventDefault();
+      await router.push({
+        query: { ...router.query, amount, from, to },
+        pathname: "/currencyconverter",
+      });
+    }),
+    []
+  );
+
   useEffect(() => {
     const fetch = async () => {
       if (hasFormQuery) {
@@ -57,7 +72,7 @@ export const CurrencyConverter = ({
       }
     };
     void fetch();
-  }, [hasFormQuery]);
+  }, [hasFormQuery, watch("from"), watch("to"), onSubmit]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -71,14 +86,6 @@ export const CurrencyConverter = ({
     };
     void fetchData();
   }, [from, to]);
-
-  const onSubmit = handleSubmit(async ({ from, to, amount }, e) => {
-    e?.preventDefault();
-    await router.push({
-      query: { ...router.query, amount, from, to },
-      pathname: "/currencyconverter",
-    });
-  });
 
   const switchCurrency = async () => {
     const to = getValues("to");
@@ -106,32 +113,44 @@ export const CurrencyConverter = ({
         type="number"
         error={errors.amount}
       />
-      <Select
-        {...register("from")}
-        id="from"
-        label="From"
-        error={errors.from}
-        options={currencies.map(({ acronym, name }) => ({
-          value: acronym,
-          name,
-        }))}
+      <Controller
+        control={control}
+        name="from"
+        render={({ field: { onChange, value }, fieldState: { error } }) => (
+          <Select
+            options={currencies.map(({ value, name }) => ({
+              name: `${value.toUpperCase()} - ${name}`,
+              value,
+            }))}
+            value={value}
+            onChange={onChange}
+            error={error}
+            resetField={() => resetField("from")}
+          />
+        )}
       />
       <button
-        className="self-start rounded-full shadow-sm focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        className="self-start rounded-full shadow-sm focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500"
         type="button"
         onClick={() => void switchCurrency()}
       >
         <SwitchIcon />
       </button>
-      <Select
-        {...register("to")}
-        id="to"
-        label="To"
-        error={errors.from}
-        options={currencies.map(({ acronym, name }) => ({
-          value: acronym,
-          name,
-        }))}
+      <Controller
+        control={control}
+        name="to"
+        render={({ field: { onChange, value }, fieldState: { error } }) => (
+          <Select
+            options={currencies.map(({ value, name }) => ({
+              name: `${value.toUpperCase()} - ${name}`,
+              value,
+            }))}
+            value={value}
+            onChange={onChange}
+            error={error}
+            resetField={() => resetField("to")}
+          />
+        )}
       />
       <ConvertResult
         exchangeRate={exchangeRate}
@@ -154,7 +173,7 @@ interface ConvertResultProps {
 }
 
 export interface Currency {
-  acronym: string;
+  value: string;
   name: string;
 }
 
@@ -185,12 +204,4 @@ const ConvertResult = ({
       </div>
     </section>
   );
-};
-
-const fetchExchangeRateFromTo = async (from: string, to: string) => {
-  const res = await fetch(
-    `https://cdn.jsdelivr.net/gh/fawazahmed0/currency-api@1/latest/currencies/${from}/${to}.json`
-  );
-  const data = (await res.json()) as Record<string, string | number>;
-  return data;
 };
